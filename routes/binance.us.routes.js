@@ -135,9 +135,6 @@ var getToken = function (headers) {
         var secret = getSecret(req.headers);
         var timestamp = Date.now();
         var signature;
-     
-    
-    
     
         if (token) {
             //let transformer = new _transform('Bitmart')
