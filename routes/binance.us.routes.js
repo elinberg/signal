@@ -136,7 +136,6 @@ var getToken = function (headers) {
         var timestamp = Date.now();
         var signature;
       
-    
         if (token) {
             //let transformer = new _transform('Bitmart')
             let transformer = new _transform('Binance');
