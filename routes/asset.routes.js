@@ -8,6 +8,43 @@ var User = require("../data/db/user.model");
 // Asset Model
 let Asset = require('../data/db/asset.model');
 
+var emitter = require('events').EventEmitter;
+
+var em = new emitter();
+
+
+const WebSocket = require('ws');
+
+const { Server } = require('ws');
+const port = 3001
+const wss = new Server({port});
+wss.on('connection', (ws) => {
+console.log('Client connected');
+
+ws.on('close', () => console.log('Client disconnected'));
+});
+//
+var HOST = 'wss://stream.binance.com:9443/ws/shibusdt@miniTicker'
+//var wsC = new WebSocket(HOST);
+em.addListener('FirstEvent', function (data) {
+  console.log('First subscriber: ' + data);
+  wss.clients.forEach((client) => {
+  
+    client.send(data)
+  })
+  //console.log(event)
+   
+
+  });
+//wsC.onmessage = function (event) {
+  
+  
+
+//};
+
+
+
+
 var getToken = function (headers) {
     if (headers && headers.authorization) {
       var parted = headers.authorization.split(' ');
@@ -44,34 +81,92 @@ assetRoutes.get('/:id', passport.authenticate('jwt', { session: false}), functio
 });
 
 assetRoutes.post('/add', passport.authenticate('jwt', { session: false}), function(req, res) {
-    let asset = new Asset(req.body);
-    asset.save()
+  let timestamp,date, formatted;
+  let asset = {};
+  Asset.schema.eachPath(function(path) {
+    //console.log(path);
+    if(req.body[path] !== undefined){
+      if(path.substring(0,1) !== '_'){
+        
+        if(path === 'transaction_date'){
+          try {
+            timestamp = Number.parseInt(req.body[path]) + 1000; //convert to milli's
+            date = new Date(timestamp)
+            formatted = date.toLocaleString("en-US", {year: "numeric"}) + '-' + 
+            date.toLocaleString("en-US", {month: "numeric"}) + '-' +
+            date.toLocaleString("en-US", {day: "numeric"}) + ' ' +
+            date.toLocaleTimeString('en-US')
+            
+          } catch (e) {
+            console.log('Date Parese Error', e);
+          }
+          asset[path] = formatted
+        } else {
+          asset[path] = req.body[path];
+        }
+      }
+                    
+    }
+  });  
+  
+  let assetObj = new Asset(asset);
+    assetObj.save()
         .then(asset => {
-            res.status(200).json({'asset': 'asset added successfully'});
+            res.status(200).json({'asset': 'asset added successfully',id:assetObj._id});
         })
         .catch(err => {
-            res.status(400).send('adding new asset failed');
+            res.status(400).send('adding new asset failed'+err);
         });
 });
 
 assetRoutes.post('/update/:id', passport.authenticate('jwt', { session: false}), function(req, res) {
+    
+    let timestamp,date, formatted;
     Asset.findById(req.params.id, function(err, asset) {
         if (!asset)
             res.status(404).send("data is not found");
         else
-            asset.pair = req.body.pair;
-            asset.price = req.body.price;
-            asset.amount = req.body.amount;
-            asset.order_type = req.body.order_type;
-            asset.order_status = req.body.order_status;
-            asset.status_message = req.body.status_message;
-            
-            asset.save().then(asset => {
-                res.json('Asset updated!');
-            })
-            .catch(err => {
-                res.status(400).send("Update not possible");
+
+            Asset.schema.eachPath(function(path) {
+              console.log(path);
+              if(req.body[path] !== undefined){
+                if(path.substring(0,1) !== '_'){
+                  if(path === 'transaction_date'){
+                    try {
+                      timestamp = Number.parseInt(req.body[path]) + 1000; //convert to milli's
+                      date = new Date(timestamp)
+                      formatted = date.toLocaleString("en-US", {year: "numeric"}) + '-' + 
+                      date.toLocaleString("en-US", {month: "numeric"}) + '-' +
+                      date.toLocaleString("en-US", {day: "numeric"}) + ' ' +
+                      date.toLocaleTimeString('en-US')
+                      
+  
+                    } catch (e) {
+                      console.log('Date Parse Error', e);
+                    }
+  
+                    asset[path] = formatted
+                    
+                    
+                  } else {
+                    asset[path] = req.body[path];
+                  }
+                  
+                }
+                
+                              
+              }
+              
             });
+            asset.save().then(asset => {
+              res.json('Asset updated!');
+              }).catch(err => {
+                res.status(400).send("Update not possible"+err);
+            //res.status(400).send(body)
+              });
+            em.emit('FirstEvent', JSON.stringify(asset));
+            
+            
     });
 });
 

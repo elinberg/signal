@@ -27,6 +27,12 @@ authRouter.post('/signup', function(req, res) {
   }
 });
 
+authRouter.post('/wss', function(req, res) {
+
+
+  res.json({success: true, token: 'JWT ' });
+
+});
 
 //Purpose: To sign in an existing user
 authRouter.post('/signin', function(req, res) {

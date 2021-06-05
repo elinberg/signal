@@ -31,7 +31,7 @@ class Transformer {
         if(this.name === 'Binance'){
           var transformed = {};
           var tickers = [];
-          console.log(response)
+          
           for(let i = 0; i < response.symbols.length;i++){
             tickers.push(response.symbols[i].baseAsset + '_' + response.symbols[i].quoteAsset)
           }

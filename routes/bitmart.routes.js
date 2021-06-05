@@ -102,6 +102,32 @@ var getToken = function (headers) {
       return res.status(403).send({success: false, msg: 'Unauthorized.'});
     }
   });
+  bitRoutes.get('/trades', passport.authenticate('jwt', { session: false}), function(req, res) {
+    console.log('hitting Trades', req.query.symbol);
+    
+    var token = getToken(req.headers);
+    var key = getKey(req.headers);
+    var secret = getSecret(req.headers);
+    //console.log('token,key',token, key)
+    if (token) {
+        //let transformer = new _transform('Bitmart')
+
+        fetch('https://api-cloud.bitmart.com/spot/v1/orders?limit=10&offset=1&status='+req.query.status+'&symbol='+ req.query.symbol,{timeout: 30000, headers:{	'X-BM-KEY': key , 'X-BM-SIGN': secret}})
+        .then(response => response.json())
+        .then(data => { 
+         // {trades:data.data['orders'],current_page:data.data.current_page},
+          res.json({current_page:data.data.current_page,trades:data.data['orders']})
+        })
+        .catch((error) => {
+          // Handle the error
+          console.log(error);
+        });
+        
+  
+    } else {
+      return res.status(403).send({success: false, msg: 'Unauthorized.'});
+    }
+  });
   bitRoutes.get('/status', passport.authenticate('jwt', { session: false}), function(req, res) {
     console.log('hitting /status')
     

@@ -19,15 +19,19 @@
     "deasync": "^0.1.21",
     "express": "^4.17.1",
     "fetch": "^1.1.0",
+    "http": "*",
     "jsonwebtoken": "^8.5.1",
+    "mongodb": "^3.6.9",
     "mongoose": "^5.12.5",
     "morgan": "^1.10.0",
     "node-fetch": "^2.6.1",
+    "node-static": "^0.7.11",
     "openssl-nodejs": "^1.0.5",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "pug": "^3.0.2",
-    "serviceworker": "^0.1.7"
+    "serviceworker": "^0.1.7",
+    "ws": "^0.4.32"
   }
 }

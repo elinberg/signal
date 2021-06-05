@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+
 const Schema = mongoose.Schema;
 const opts = {
 // Make Mongoose use Unix time (seconds since Jan 1, 1970)
@@ -11,14 +12,29 @@ let Asset = new Schema({
     price: {
         type: Number
     },
-    amount: {
+    avg_price: {
         type: Number
     },
-    order_type: {
+    qty: {
         type: Number
+    },
+    filled: {
+        type: Number
+    },
+    side: { //buy/sell
+        type: String
+    },
+    transaction_date: {
+        type: String
+    },
+    exchange_id: {
+        type: Number
+    },
+    order_type: { // market, limit
+        type: String
     },
     order_status: {
-        type: Number
+        type: String
     },
     status_message: {
         type: String

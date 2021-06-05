@@ -101,14 +101,18 @@ exchangeRoutes.get('/:id', passport.authenticate('jwt', { session: false}), func
 });
 
 exchangeRoutes.post('/add', passport.authenticate('jwt', { session: false}), function(req, res) {
-    let exchange = new Exchange(req.body);
-    exchange.save()
+    req.body.map(exchange => {
+      console.log(exchange)
+      let exch = new Exchange(exchange);
+      exch.save()
         .then(exchange => {
-            res.status(200).json({'exchange': 'exchange added successfully'});
+            //res.status(200).json({'exchange': 'exchange added successfully',id:exchange._id});
         })
         .catch(err => {
-            res.status(400).send('adding new exchange failed');
+            //res.status(400).send('adding new exchange failed');
         });
+      })
+      res.status(200).json({'exchange': 'exchange added successfully'});
 });
 
 exchangeRoutes.post('/update/:id', passport.authenticate('jwt', { session: false}), function(req, res) {
