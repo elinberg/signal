@@ -1,6 +1,7 @@
 module.exports = {
   apps : [{
     name:'signal',
+    cwd: '~/signal',
     script: 'server.js',
     watch: '.'
   }, {
