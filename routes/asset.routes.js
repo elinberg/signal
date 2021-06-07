@@ -164,7 +164,7 @@ assetRoutes.post('/update/:id', passport.authenticate('jwt', { session: false}),
                 res.status(400).send("Update not possible"+err);
             //res.status(400).send(body)
               });
-            em.emit('FirstEvent', JSON.stringify(asset));
+           // em.emit('FirstEvent', JSON.stringify(asset));
             
             
     });
