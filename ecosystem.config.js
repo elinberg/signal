@@ -8,7 +8,7 @@ module.exports = {
     },
     watch: '.'
   }, {
-    script: './service-worker',
+    script: './service-worker.js',
     watch: ['./service-worker/']
   }],
 
