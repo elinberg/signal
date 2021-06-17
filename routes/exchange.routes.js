@@ -7,10 +7,11 @@ require('../config/passport')(passport);
 var jwt = require('jsonwebtoken');
 var User = require("../data/db/user.model");
 let Exchange = require('../data/db/exchange.model');
+require('../utils/redis'); 
 const _transform = require("./transformer");
 const { response } = require('express');
 const util = require('util')
-const request = require("request");
+//const request = require("request");
 
 const axios = require("axios");
 //const sync = deasync((promise, callback) => promise.then(result) => callback(null, result)//;
@@ -40,7 +41,7 @@ var getToken = function (headers) {
   };
 async function apiCall(exchange){
     let options = {method:'get'};
-
+    let plug =  {};
     
 
   // console.log(`Jan Bodnar: ${u1.data.created_at}`);
@@ -56,16 +57,18 @@ async function apiCall(exchange){
     // let response = await fetch(exchange.exchangeUrl+exchange.timeEndpoint, options);
     // let data = await response.json();
     let transformer = new _transform(exchange.name);
-      exchange.serverTime = transformer.getTime(timeResult.data).serverTime;
-      exchange.tickers = transformer.getTickers(tickerResult.data).tickers;
+    plug.serverTime = transformer.getTime(timeResult.data).serverTime;
+    plug.tickers = transformer.getTickers(tickerResult.data).tickers;
+
+  
     //console.log(data);
-    return exchange;
+    return plug;
     } catch (err) {
       console.error(err)
     }
 
  }
-exchangeRoutes.get('/', passport.authenticate('jwt', { session: false}), function(req, res) {
+exchangeRoutes.get('/', passport.authenticate('jwt', { session: false}), async (req, res) => {
  
   console.log('hitting here...')
   
@@ -73,31 +76,26 @@ exchangeRoutes.get('/', passport.authenticate('jwt', { session: false}), functio
   console.log('token.......',token)
   if (token) {
       
-    Exchange.find(function (err, exchanges) {
-
-      if (err) return next(err);
-            
-      res.json(exchanges);
-    }).lean();
-    //res.json(exchanges)
+   const exchanges = await Exchange.find().cache({ expire: 60 });
+    res.json(exchanges);
   } else {
     return res.status(403).send({success: false, msg: 'Unauthorized.'});
   }
-});
+  });
 
-exchangeRoutes.get('/:id', passport.authenticate('jwt', { session: false}), function(req, res) {
+exchangeRoutes.get('/:id', async (req, res) => {
     let id = req.params.id;
-    Exchange.findById(id, function(err, exchange) {
-        
+   let exchange = await Exchange.findById(id).cache({ expire: 90 }).lean();
+   
         exchange.serverTime = '';
         exchange.tickers = '';
-        apiCall(exchange).then(result => {
-          console.log('Eric',result)
-          res.json(exchange);
-         }) 
-
+        let restData =  await apiCall(exchange)
         
-    }).lean();
+        res.json({exchange,...restData});
+        // apiCall(exchange).then(result => {
+        //   console.log('Eric',result)
+        //   res.json(exchange);
+        //  }) 
 });
 
 exchangeRoutes.post('/add', passport.authenticate('jwt', { session: false}), function(req, res) {

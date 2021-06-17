@@ -9,6 +9,24 @@ let Asset = new Schema({
     pair: {
         type: String
     },
+    symbol: {
+        type: String
+    },
+    open: {
+        type: String
+    },
+    close: {
+        type: String
+    },
+    high: {
+        type: String
+    },
+    low: {
+        type: String
+    },
+    time: {
+        type: String
+    },
     price: {
         type: Number
     },

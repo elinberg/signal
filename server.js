@@ -13,9 +13,9 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var morgan = require('morgan');
+require('./utils/redis');
 
-
-
+let exchange = require('./data/db/exchange.model')();
 const PORT = 4000;
 //let Asset = require('./data/db/asset.model');
 

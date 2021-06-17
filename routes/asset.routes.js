@@ -13,29 +13,29 @@ var emitter = require('events').EventEmitter;
 var em = new emitter();
 
 
-const WebSocket = require('ws');
+// const WebSocket = require('ws');
 
-const { Server } = require('ws');
-const port = 3001
-const wss = new Server({port});
-wss.on('connection', (ws) => {
-console.log('Client connected');
+// const { Server } = require('ws');
+// const port = 3001
+// const wss = new Server({port});
+// wss.on('connection', (ws) => {
+// console.log('Client connected');
 
-ws.on('close', () => console.log('Client disconnected'));
-});
+// ws.on('close', () => console.log('Client disconnected'));
+//});
 //
 var HOST = 'wss://stream.binance.com:9443/ws/shibusdt@miniTicker'
 //var wsC = new WebSocket(HOST);
-em.addListener('FirstEvent', function (data) {
-  console.log('First subscriber: ' + data);
-  wss.clients.forEach((client) => {
+// em.addListener('FirstEvent', function (data) {
+//   console.log('First subscriber: ' + data);
+//   wss.clients.forEach((client) => {
   
-    client.send(data)
-  })
-  //console.log(event)
+//     client.send(data)
+//   })
+//   //console.log(event)
    
 
-  });
+//   });
 //wsC.onmessage = function (event) {
   
   
@@ -72,6 +72,28 @@ assetRoutes.get('/', passport.authenticate('jwt', { session: false}), function(r
     return res.status(403).send({success: false, msg: 'Unauthorized.'});
   }
 });
+assetRoutes.get('/schema', passport.authenticate('jwt', { session: false}), function(req, res) {
+  //let timestamp,date, formatted;
+  //console.log('PATH', req);
+  var token = getToken(req.headers);
+  console.log('token.......',token)
+  if (token) {
+    let schema = [];
+    Asset.schema.eachPath(function(path) {
+      
+      console.log('PATH',path);
+      schema.push(path)
+
+    });  
+    
+    res.status(200).json({schema});
+  } else {
+    return res.status(403).send({success: false, msg: 'Unauthorized.'});
+  }
+    
+});
+
+
 
 assetRoutes.get('/:id', passport.authenticate('jwt', { session: false}), function(req, res) {
     let id = req.params.id;
@@ -79,6 +101,9 @@ assetRoutes.get('/:id', passport.authenticate('jwt', { session: false}), functio
         res.json(asset);
     });
 });
+
+
+
 
 assetRoutes.post('/add', passport.authenticate('jwt', { session: false}), function(req, res) {
   let timestamp,date, formatted;
