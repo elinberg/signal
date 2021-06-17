@@ -8,8 +8,8 @@ module.exports = {
     },
     watch: '.'
   }, {
-    script: './service-worker/',
-    watch: ['./service-worker']
+    script: './source/service-worker/',
+    watch: ['./source/service-worker']
   }],
 
   deploy : {
