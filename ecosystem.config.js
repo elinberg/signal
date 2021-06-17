@@ -1,7 +1,7 @@
 module.exports = {
   apps : [{
     name:'signal',
-    cwd: '~/signal/source',
+    cwd: '~/signal',
     script: 'server.js',
     env_production: {
       NODE_ENV: "production",
