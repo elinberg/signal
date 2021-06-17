@@ -44,7 +44,7 @@ const connection = mongoose.connection;
 connection.once('open', function() {
     console.log("MongoDB database connection established successfully");
 })
-
+mongoose.set('useCreateIndex', true)
 //app.set('view engine', 'jade');
 app.set('views', __dirname + '/views');
 app.set('view engine', 'pug');
