@@ -1,15 +1,15 @@
 module.exports = {
   apps : [{
     name:'signal',
-    cwd: '~/signal',
+    cwd: '~/signal/source',
     script: 'server.js',
     env_production: {
       NODE_ENV: "production",
     },
     watch: '.'
   }, {
-    script: './source/service-worker/',
-    watch: ['./source/service-worker']
+    script: './service-worker',
+    watch: ['./service-worker/']
   }],
 
   deploy : {
