@@ -7,11 +7,7 @@ module.exports = {
       NODE_ENV: "production",
     },
     watch: '.'
-  }, {
-    script: './service-worker.js',
-    watch: ['./service-worker/']
-  }],
-
+    }],
   deploy : {
     production : {
       user : 'node',
