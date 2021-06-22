@@ -28,20 +28,20 @@ authRouter.post('/signup', function (req, res) {
 });
 authRouter.get('/signature', function (req, res) {
 
-  if (!req.query.symbol || !req.query.timestamp) {
+  if (!req.query.symbol || !req.query.timestamp|| !req.query.recvWindow) {
     res.json({ success: false, msg: 'Please pass symbol and timestamp' });
   } else {
     let time = req.query.timestamp
     var secret = 'LzNWXKhxE56z3VKHqZGcjFyyMoYSRxGxTB9CEktZCpxH3AOrXUiult6eFUTpLj9T';
-    let signature_string = 'timestamp=' + Number(time)+ '&symbol=' + req.query.symbol.replace(/_/g, "")
-    console.log(signature_string)
+    let signature_string = 'timestamp=' +time+ '&symbol=' + req.query.symbol + '&recvWindow='+req.query.recvWindow
+    console.log('SIGNATURE:',signature_string)
     signature = require("crypto").createHmac("sha256", secret)
       .update(signature_string)
       .digest("hex"); //binary, hex,base64
 
       console.log(signature)
 
-    res.json({ success: true, msg: { signature }});
+    res.json({ success: true, signature:signature,timestamp:time, recvWindow:req.query.recvWindow });
 
 
   }
